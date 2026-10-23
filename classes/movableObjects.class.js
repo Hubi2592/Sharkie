@@ -23,39 +23,38 @@ class MovableObject {
     
 
      swimRight() {
-        this.x = this.x + 3;
+        this.x = this.x + 5;
         this.otherDirection = false;
      };
 
     swimLeft() {
-        this.x = this.x - 3;
+        this.x = this.x - 5;
         this.otherDirection = true;
     }
 
     swimUp() {
-        this.y = this.y - 3;
+        this.y = this.y - 5;
     }
 
     swimDown() {
-        this.y = this.y + 3;
+        this.y = this.y + 5;
     }
 
     moveleft() {
         this.x -= this.speed;
     }
 
-    animate() {
-        let i = this.currentImage % this.ImagesIdle.length;
-        let path = this.ImagesIdle[i];
-        this.img = this.imgCache[path];
-        this.currentImage++;
+    playAnimation(images) {
+    let i = this.currentImage % images.length;
+    this.img = this.imgCache[images[i]];
+    this.currentImage++;
     }
 
-    swimAnimate() {
-        let i = this.currentImage % this.swimImages.length;
-        let path = this.swimImages[i];
-        this.img = this.imgCache[path];
+    playAnimationTailLoop(images, tailCount) {
+        if (this.currentImage >= images.length) {
+            this.currentImage = images.length - tailCount;
+        }
+        this.img = this.imgCache[images[this.currentImage]];
         this.currentImage++;
     }
-
 }

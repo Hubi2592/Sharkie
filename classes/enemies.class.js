@@ -22,7 +22,7 @@ class Enemy extends MovableObject {
         }, 1000 / 60); // Move left every frame (60 FPS)
 
         setInterval(() => {
-            this.swimAnimate();
+           this.playAnimation(this.swimImages);
         }, 1000 / 10); // Animate every 100ms (10 frames per second)
     }
 
