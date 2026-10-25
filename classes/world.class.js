@@ -1,26 +1,8 @@
 class World {
-backgroundObjects = [
-    new BackgroundObject('img/3. Background/Layers/5. Water/D1.png',0),
-    new BackgroundObject('img/3. Background/Layers/3.Fondo 1/D1.png',0),
-    new BackgroundObject('img/3. Background/Layers/4.Fondo 2/D1.png',0),
-    new BackgroundObject('img/3. Background/Layers/2. Floor/D1.png',0),
-    new BackgroundObject('img/3. Background/Layers/1. Light/1.png',0),
-    new BackgroundObject('img/3. Background/Layers/5. Water/D2.png', 1900),
-    new BackgroundObject('img/3. Background/Layers/3.Fondo 1/D2.png', 1900),
-    new BackgroundObject('img/3. Background/Layers/4.Fondo 2/D2.png', 1900),
-    new BackgroundObject('img/3. Background/Layers/2. Floor/D2.png', 1900),
-    new BackgroundObject('img/3. Background/Layers/1. Light/2.png', 1900),
 
-
-]
 character = new Character();
-enemies = [
-    new Enemy(),
-    new Enemy(),
-    new Enemy(),
-    new Enemy(),
-];
-
+enemies = level1.enemies;
+backgroundObjects = level1.backgroundObjects;
 canvas;
 ctx;
 keyboard;
@@ -62,6 +44,7 @@ camera_x = 0;
         if (this.keyboard.DOWN) {
             this.character.swimDown();
         }
+        this.character.y =Math.max(-90, Math.min(this.character.y, this.canvas.height - this.character.height + 30));
     }
 
     addObjectsToCanvas(objects) {
