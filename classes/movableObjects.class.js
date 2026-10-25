@@ -23,21 +23,21 @@ class MovableObject {
     
 
      swimRight() {
-        this.x = this.x + 5;
+        this.x = this.x + 10;
         this.otherDirection = false;
      };
 
     swimLeft() {
-        this.x = this.x - 5;
+        this.x = this.x - 10;
         this.otherDirection = true;
     }
 
     swimUp() {
-        this.y = this.y - 5;
+        this.y = this.y - 10;
     }
 
     swimDown() {
-        this.y = this.y + 5;
+        this.y = this.y + 10;
     }
 
     moveleft() {

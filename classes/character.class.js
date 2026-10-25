@@ -76,7 +76,7 @@ class Character extends MovableObject {
             let state;
             if (moving) {
                 state = 'swim';
-            } else if (Date.now() - this.lastInput > 5000) {
+            } else if (Date.now() - this.lastInput > 10000) {
                 state = 'longIdle';
             } else {
                 state = 'idle';
@@ -94,7 +94,6 @@ class Character extends MovableObject {
                 if (state === 'idle') this.playAnimation(this.ImagesIdle);
                 if (state === 'longIdle') this.playAnimationTailLoop(this.longIdleImages, 3);
             }
-            this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
     }
 }
