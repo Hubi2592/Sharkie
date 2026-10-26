@@ -47,6 +47,17 @@ class Character extends MovableObject {
         'img/1.Sharkie/3.Swim/6.png'
     ];
 
+    attackImages = [
+        'img/1.Sharkie/4.Attack/Fin slap/1.png',
+        'img/1.Sharkie/4.Attack/Fin slap/2.png',
+        'img/1.Sharkie/4.Attack/Fin slap/3.png',
+        'img/1.Sharkie/4.Attack/Fin slap/4.png',
+        'img/1.Sharkie/4.Attack/Fin slap/5.png',
+        'img/1.Sharkie/4.Attack/Fin slap/6.png',
+        'img/1.Sharkie/4.Attack/Fin slap/7.png',
+        'img/1.Sharkie/4.Attack/Fin slap/8.png'
+    ];
+
 
 
 
@@ -55,15 +66,21 @@ class Character extends MovableObject {
     this.loadImages(this.ImagesIdle);
     this.loadImages(this.swimImages);
     this.loadImages(this.longIdleImages);
+    this.loadImages(this.attackImages);
     this.lastInput = Date.now();
     this.currentState = '';
-    this.frameDurations = { swim: 80, idle: 150, longIdle: 200 }; // Millisekunden pro Bild
+    this.attacking = false;
+    this.lastAttackTime = 0;
+    this.attackCooldown = 800;
+    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30 }; // Millisekunden pro Bild
     this.lastFrameTime = 0;
     this.x = 100;
     this.y = 300;
     this.height = 200;
     this.width = 200;
     this.zindex = 1;
+    this.applyGravity();
+
 
         setInterval(() => {
             let k = this.world.keyboard;
@@ -73,8 +90,15 @@ class Character extends MovableObject {
                 this.lastInput = Date.now();
             }
 
+            if (k.SPACE && !this.attacking && Date.now()- this.lastAttackTime >= this.attackCooldown) {                  // NEU
+            this.attacking = true;
+            this.currentImage = 0;
+            }
+
             let state;
-            if (moving) {
+            if (this.attacking){
+                state = 'attack';
+            }else if (moving) {
                 state = 'swim';
             } else if (Date.now() - this.lastInput > 10000) {
                 state = 'longIdle';
@@ -93,6 +117,13 @@ class Character extends MovableObject {
                 if (state === 'swim') this.playAnimation(this.swimImages);
                 if (state === 'idle') this.playAnimation(this.ImagesIdle);
                 if (state === 'longIdle') this.playAnimationTailLoop(this.longIdleImages, 3);
+                if (state === 'attack'){
+                    this.playAnimationEndStop(this.attackImages);
+                    if (this.currentImage >= this.attackImages.length) {
+                    this.attacking = false;
+                    this.lastAttackTime = Date.now();
+                    }
+                }
             }
         }, 1000 / 60);
     }

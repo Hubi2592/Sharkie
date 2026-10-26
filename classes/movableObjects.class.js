@@ -7,6 +7,16 @@ class MovableObject {
     imgCache = {};
     currentImage = 0;
     otherDirection = false;
+    sinkingSpeed = 1;
+    sinkLimit = 700;
+
+    applyGravity() {
+        setInterval(() => {
+            if (this.y < this.sinkLimit) {
+            this.y += this.sinkingSpeed;
+            }
+        }, 1000 / 60);
+    }
 
     loadImage(path) {
         this.img = new Image();
@@ -42,6 +52,11 @@ class MovableObject {
 
     moveleft() {
         this.x -= this.speed;
+    }
+
+    attackAnimation(){
+        this.playAnimationEndStop();
+
     }
 
     playAnimation(images) {
