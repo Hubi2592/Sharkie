@@ -10,6 +10,7 @@ camera_x =0;
 lastCharacterX = this.character.x;
 tileWidth =1900;
 nextTileIndex =2;
+maxTiles = 4;
 nextEnemySpawnX =1900;
 enemySpawnDistance = 600;
 
@@ -22,12 +23,13 @@ enemySpawnDistance = 600;
         this.draw();
     }
 
-    extendBackground() {
+   extendBackground() {
     let visibleRight = -this.camera_x + this.canvas.width;
-    while (visibleRight + this.tileWidth > this.nextTileIndex * this.tileWidth) {
+    while (this.nextTileIndex < this.maxTiles &&
+           visibleRight + this.tileWidth > this.nextTileIndex * this.tileWidth) {
         this.addBackgroundTile(this.nextTileIndex);
         this.nextTileIndex++;
-        }
+    }
     }
 
     addBackgroundTile(index) {

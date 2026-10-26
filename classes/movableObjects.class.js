@@ -57,4 +57,12 @@ class MovableObject {
         this.img = this.imgCache[images[this.currentImage]];
         this.currentImage++;
     }
+
+    playAnimationEndStop(images){
+        if(this.currentImage == images.length){
+            return;
+        }
+        this.img = this.imgCache[images[this.currentImage]];
+        this.currentImage++;
+    }
 }
