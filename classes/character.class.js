@@ -57,8 +57,30 @@ class Character extends MovableObject {
         'img/1.Sharkie/4.Attack/Fin slap/7.png',
         'img/1.Sharkie/4.Attack/Fin slap/8.png'
     ];
+    
+    hurtImages = [
+        'img/1.Sharkie/5.Hurt/1.Poisoned/1.png',
+        'img/1.Sharkie/5.Hurt/1.Poisoned/2.png',
+        'img/1.Sharkie/5.Hurt/1.Poisoned/3.png',
+        'img/1.Sharkie/5.Hurt/1.Poisoned/4.png'
+    ]
 
+    deathImages = [
+        'img/1.Sharkie/6.dead/1.Poisoned/1.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/2.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/3.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/4.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/5.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/6.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/7.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/8.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/9.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/10.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/11.png',
+        'img/1.Sharkie/6.dead/1.Poisoned/12.png'
+    ];
 
+    offset = { top: 90, bottom: 45, left: 40, right: 40 };
 
 
    constructor() {
@@ -67,12 +89,14 @@ class Character extends MovableObject {
     this.loadImages(this.swimImages);
     this.loadImages(this.longIdleImages);
     this.loadImages(this.attackImages);
+    this.loadImages(this.hurtImages);
+    this.loadImages(this.deathImages);
     this.lastInput = Date.now();
     this.currentState = '';
     this.attacking = false;
     this.lastAttackTime = 0;
     this.attackCooldown = 800;
-    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30 }; // Millisekunden pro Bild
+    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120 }; // Millisekunden pro Bild
     this.lastFrameTime = 0;
     this.x = 100;
     this.y = 300;
@@ -83,6 +107,7 @@ class Character extends MovableObject {
 
 
         setInterval(() => {
+            this.applyKnockback();
             let k = this.world.keyboard;
             let moving = k.LEFT || k.RIGHT || k.UP || k.DOWN;
 
@@ -90,22 +115,25 @@ class Character extends MovableObject {
                 this.lastInput = Date.now();
             }
 
-            if (k.SPACE && !this.attacking && Date.now()- this.lastAttackTime >= this.attackCooldown) {                  // NEU
-            this.attacking = true;
-            this.currentImage = 0;
+            if (k.SPACE && !this.attacking && !this.isDead() && Date.now() - this.lastAttackTime >= this.attackCooldown) {
+                this.attacking = true;
+                this.currentImage = 0;
             }
 
             let state;
-            if (this.attacking){
+            if (this.isDead()) {
+                state = 'dead';
+            }else if (this.isHurt()){
+                state = 'hurt';
+            } else if (this.attacking) {
                 state = 'attack';
-            }else if (moving) {
+            } else if (moving) {
                 state = 'swim';
             } else if (Date.now() - this.lastInput > 10000) {
                 state = 'longIdle';
             } else {
                 state = 'idle';
             }
-
             if (state !== this.currentState) {
                 this.currentState = state;
                 this.currentImage = 0;
@@ -114,6 +142,8 @@ class Character extends MovableObject {
             let now = Date.now();
             if (now - this.lastFrameTime >= this.frameDurations[state]) {
                 this.lastFrameTime = now;
+                if (state === 'hurt') this.playAnimationEndStop(this.hurtImages);
+                if (state === 'dead') this.playAnimationEndStop(this.deathImages);
                 if (state === 'swim') this.playAnimation(this.swimImages);
                 if (state === 'idle') this.playAnimation(this.ImagesIdle);
                 if (state === 'longIdle') this.playAnimationTailLoop(this.longIdleImages, 3);

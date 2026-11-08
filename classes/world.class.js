@@ -1,5 +1,5 @@
 class World {
-
+statusBar = new StatusBar();
 character = new Character();
 enemies = level1.enemies;
 backgroundObjects = level1.backgroundObjects;
@@ -13,6 +13,7 @@ nextTileIndex =2;
 maxTiles = 4;
 nextEnemySpawnX =1900;
 enemySpawnDistance = 600;
+
 
 
     constructor(canvas, keyboard) {
@@ -77,6 +78,19 @@ enemySpawnDistance = 600;
     });
     }
 
+    checkCollisions() {
+        if (this.character.isDead()) return;
+        this.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && this.character.hit()) {
+                this.character.health -= 20;
+                this.statusBar.setPercentage(this.character.health);
+                this.character.knockback(enemy);
+                console.log('Treffer', enemy);
+                console.log('Health', this.character.health )
+            }
+        });
+    }
+
     
     draw() {
 
@@ -85,29 +99,32 @@ enemySpawnDistance = 600;
         this.extendBackground();
         this.spawnEnemies();
         this.removeOffscreenEnemies();
+        this.checkCollisions();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);
         this.addObjectsToCanvas([this.character]);
         this.addObjectsToCanvas(this.enemies);
         this.ctx.translate(-this.camera_x, 0);
+        this.addToCanvas(this.statusBar);
 
             let self = this;
          requestAnimationFrame(function() {
             self.draw();
         });
-
-        if (this.keyboard.LEFT) {
-            this.character.swimLeft();
-        }
-        if (this.keyboard.RIGHT) {
-            this.character.swimRight();
-        }
-        if (this.keyboard.UP) {
-            this.character.swimUp();
-        }
-        if (this.keyboard.DOWN) {
-            this.character.swimDown();
-        }
+        if (!this.character.isDead() &&!this.character.isHurt()){
+            if (this.keyboard.LEFT) {
+                this.character.swimLeft();
+            }
+            if (this.keyboard.RIGHT) {
+                this.character.swimRight();
+            }
+            if (this.keyboard.UP) {
+                this.character.swimUp();
+            }
+            if (this.keyboard.DOWN) {
+                this.character.swimDown();
+            }
+        }    
         this.character.x =Math.max(0, this.character.x);
         this.character.y =Math.max(-90, Math.min(this.character.y, this.canvas.height - this.character.height + 30));
     }
@@ -128,6 +145,8 @@ enemySpawnDistance = 600;
     } else {
         this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
     }
-}
+    
+        mo.drawFrame(this.ctx);
+    }
 
 }
