@@ -13,6 +13,7 @@ nextTileIndex =2;
 maxTiles = 4;
 nextEnemySpawnX =1900;
 enemySpawnDistance = 600;
+bubbles = [];
 
 
 
@@ -106,6 +107,28 @@ enemySpawnDistance = 600;
         });
     }
 
+    checkThrowObjects() {
+        if (this.character.shotReady) {
+            this.character.shotReady = false;
+            let c = this.character;
+            let direction = c.otherDirection ? -1 : 1;
+            let x = c.otherDirection ? c.x : c.x + c.width - 40;
+            let y = c.y + c.height / 2;
+            this.bubbles.push(new Bubble(x, y, direction));
+            // this.bubbles.push(new Bubble(x, y, direction, true));
+        }
+    }
+
+    updateBubbles() {
+        this.bubbles = this.bubbles.filter(bubble => {
+            let hitEnemy = this.enemies.some(enemy => bubble.isColliding(enemy));
+            let expired = Date.now() - bubble.spawnTime > bubble.lifeTime;
+            let remove = hitEnemy || expired;
+            if (remove) bubble.stop();
+            return !remove;
+        });
+    }
+
     
     draw() {
 
@@ -116,10 +139,13 @@ enemySpawnDistance = 600;
         this.removeOffscreenEnemies();
         this.updateEnemyAwareness();
         this.checkCollisions();
+        this.checkThrowObjects();
+        this.updateBubbles();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);
         this.addObjectsToCanvas([this.character]);
         this.addObjectsToCanvas(this.enemies);
+        this.addObjectsToCanvas(this.bubbles);
         this.ctx.translate(-this.camera_x, 0);
         this.addToCanvas(this.statusBar);
 

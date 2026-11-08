@@ -57,7 +57,18 @@ class Character extends MovableObject {
         'img/1.Sharkie/4.Attack/Fin slap/7.png',
         'img/1.Sharkie/4.Attack/Fin slap/8.png'
     ];
-    
+
+    bubbleAttackImages = [
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/1.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/2.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/3.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/4.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/5.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/6.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/7.png',
+        'img/1.Sharkie/4.Attack/Bubble trap/op1 (with bubble formation)/8.png'
+    ];
+
     hurtImages = [
         'img/1.Sharkie/5.Hurt/1.Poisoned/1.png',
         'img/1.Sharkie/5.Hurt/1.Poisoned/2.png',
@@ -91,12 +102,17 @@ class Character extends MovableObject {
     this.loadImages(this.attackImages);
     this.loadImages(this.hurtImages);
     this.loadImages(this.deathImages);
+    this.loadImages(this.bubbleAttackImages);
     this.lastInput = Date.now();
     this.currentState = '';
     this.attacking = false;
+    this.shooting = false;
+    this.shotReady = false;
+    this.lastShotTime = 0;
+    this.shotCooldown = 600;
     this.lastAttackTime = 0;
     this.attackCooldown = 800;
-    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120 }; // Millisekunden pro Bild
+    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120, shoot: 60 }; // Millisekunden pro Bild
     this.lastFrameTime = 0;
     this.x = 100;
     this.y = 300;
@@ -115,18 +131,27 @@ class Character extends MovableObject {
                 this.lastInput = Date.now();
             }
 
-            if (k.SPACE && !this.attacking && !this.isDead() && Date.now() - this.lastAttackTime >= this.attackCooldown) {
-                this.attacking = true;
+            if (k.SPACE && !this.attacking && !this.shooting && !this.isDead() && Date.now() - this.lastAttackTime >= this.attackCooldown) {
+            this.attacking = true;
+            this.currentImage = 0;
+        }
+
+            if (k.D && !this.shooting && !this.attacking && !this.isDead() && Date.now() - this.lastShotTime >= this.shotCooldown) {
+                this.shooting = true;
                 this.currentImage = 0;
             }
 
             let state;
             if (this.isDead()) {
                 state = 'dead';
-            }else if (this.isHurt()){
+            } else if (this.isHurt()) {
                 state = 'hurt';
+                this.attacking = false;   // NEU (Fehler von oben)
+                this.shooting = false;    // NEU
             } else if (this.attacking) {
                 state = 'attack';
+            } else if (this.shooting) {   // NEU
+                state = 'shoot';
             } else if (moving) {
                 state = 'swim';
             } else if (Date.now() - this.lastInput > 10000) {
@@ -152,6 +177,14 @@ class Character extends MovableObject {
                     if (this.currentImage >= this.attackImages.length) {
                     this.attacking = false;
                     this.lastAttackTime = Date.now();
+                    }
+                }
+                if (state === 'shoot') {
+                    this.playAnimationEndStop(this.bubbleAttackImages);
+                    if (this.currentImage >= this.bubbleAttackImages.length) {
+                        this.shooting = false;
+                        this.lastShotTime = Date.now();
+                        this.shotReady = true;
                     }
                 }
             }

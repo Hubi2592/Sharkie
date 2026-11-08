@@ -22,6 +22,8 @@ window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') keyboard.UP = true;
     if (event.key === 'ArrowDown') keyboard.DOWN = true;
     if (event.key === ' ') keyboard.SPACE = true;
+    if (event.key.toLowerCase() === 'd') keyboard.D = true;
+
 });
 
 window.addEventListener('keyup', (event) => {
@@ -31,4 +33,5 @@ window.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowUp') keyboard.UP = false;
     if (event.key === 'ArrowDown') keyboard.DOWN = false;
     if (event.key === ' ') keyboard.SPACE = false;
+    if (event.key.toLowerCase() === 'd') keyboard.D = false;
 });
