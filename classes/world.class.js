@@ -63,11 +63,18 @@ enemySpawnDistance = 600;
     }
 
     spawnEnemies() {
-    if (this.character.x > this.nextEnemySpawnX) {
-        let spawnX = -this.camera_x + this.canvas.width + 100;
-        this.enemies.push(new Enemy(spawnX));
-        this.nextEnemySpawnX += this.enemySpawnDistance;
-    }
+        if (this.character.x > this.nextEnemySpawnX) {
+            let spawnX = -this.camera_x + this.canvas.width + 100;
+
+            if (Math.random() < 0.3) {
+                let y = 50 + Math.random() * (this.canvas.height - 300);
+                this.enemies.push(new Jellyfish(spawnX, y));
+            } else {
+                this.enemies.push(new Enemy(spawnX));
+            }
+
+            this.nextEnemySpawnX += this.enemySpawnDistance;
+        }
     }
 
     removeOffscreenEnemies() {
@@ -91,6 +98,14 @@ enemySpawnDistance = 600;
         });
     }
 
+    updateEnemyAwareness() {
+        this.enemies.forEach(enemy => {
+            if (enemy instanceof Jellyfish) {
+                enemy.nearby = enemy.distanceTo(this.character) < enemy.alertRange;
+            }
+        });
+    }
+
     
     draw() {
 
@@ -99,6 +114,7 @@ enemySpawnDistance = 600;
         this.extendBackground();
         this.spawnEnemies();
         this.removeOffscreenEnemies();
+        this.updateEnemyAwareness();
         this.checkCollisions();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);

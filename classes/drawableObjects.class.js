@@ -63,6 +63,14 @@ class DrawableObject {
             a.y + a.height > b.y;
     }
 
+    distanceTo(mo) {
+        let a = this.getHitbox();
+        let b = mo.getHitbox();
+        let dx = (a.x + a.width / 2) - (b.x + b.width / 2);
+        let dy = (a.y + a.height / 2) - (b.y + b.height / 2);
+        return Math.hypot(dx, dy);
+    }
+    
     drawFrame(ctx) {
         if (this instanceof Character || this instanceof Enemy || this instanceof Endboss) {
             let box = this.getHitbox();

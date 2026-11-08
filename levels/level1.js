@@ -4,6 +4,7 @@ const level1 = new Level(
     new Enemy(),
     new Enemy(),
     new Enemy(),
+    new Jellyfish(2000, 300),
     new Endboss()
     ],
     [ 
