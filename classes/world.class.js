@@ -14,6 +14,9 @@ maxTiles = 4;
 nextEnemySpawnX =1900;
 enemySpawnDistance = 600;
 bubbles = [];
+collectibles = [];
+nextCollectibleSpawnX = 800;
+collectibleSpawnDistance = 400;
 
 
 
@@ -77,6 +80,21 @@ bubbles = [];
             this.nextEnemySpawnX += this.enemySpawnDistance;
         }
     }
+    spawnCollectibles() {
+        if (this.character.x > this.nextCollectibleSpawnX) {
+            let spawnX = -this.camera_x + this.canvas.width + 100;
+
+            if (Math.random() < 0.7) {
+                let y = 100 + Math.random() * (this.canvas.height - 400);
+                this.collectibles.push(new Coin(spawnX, y));
+            } else {
+                let groundY = this.canvas.height - 80;   // Schätzwert, wie vorher
+                this.collectibles.push(new Potion(spawnX, groundY));
+            }
+
+            this.nextCollectibleSpawnX += this.collectibleSpawnDistance;
+        }
+    }
 
     removeOffscreenEnemies() {
     this.enemies = this.enemies.filter(enemy => {
@@ -136,6 +154,7 @@ bubbles = [];
         this.updateCamera();
         this.extendBackground();
         this.spawnEnemies();
+        this.spawnCollectibles();
         this.removeOffscreenEnemies();
         this.updateEnemyAwareness();
         this.checkCollisions();
@@ -145,6 +164,7 @@ bubbles = [];
         this.addObjectsToCanvas(this.backgroundObjects);
         this.addObjectsToCanvas([this.character]);
         this.addObjectsToCanvas(this.enemies);
+        this.addObjectsToCanvas(this.collectibles);
         this.addObjectsToCanvas(this.bubbles);
         this.ctx.translate(-this.camera_x, 0);
         this.addToCanvas(this.statusBar);
