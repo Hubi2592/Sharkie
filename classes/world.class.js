@@ -1,5 +1,6 @@
 class World {
-statusBar = new StatusBar();
+statusBar = new StatusBar('health');
+potionBar = new StatusBar('potion');
 character = new Character();
 enemies = level1.enemies;
 backgroundObjects = level1.backgroundObjects;
@@ -17,6 +18,9 @@ bubbles = [];
 collectibles = [];
 nextCollectibleSpawnX = 800;
 collectibleSpawnDistance = 400;
+coinsCollected = 0;
+potionsCollected = 0;
+maxPotions = 5;
 
 
 
@@ -96,6 +100,27 @@ collectibleSpawnDistance = 400;
         }
     }
 
+    checkCollectibles() {
+        if (this.character.isDead()) return;
+
+        this.collectibles = this.collectibles.filter(item => {
+            if (!this.character.isColliding(item)) return true;
+
+            if (item instanceof Potion) {
+                if (this.potionsCollected >= this.maxPotions) return true;   // Leiste voll: Trank bleibt liegen
+                this.potionsCollected++;
+                this.potionBar.setPercentage(this.potionsCollected / this.maxPotions * 100);
+                console.log('Trank eingesammelt, gesamt:', this.potionsCollected);
+            }
+            if (item instanceof Coin) {
+                this.coinsCollected++;
+                console.log('Münze eingesammelt, gesamt:', this.coinsCollected);
+            }
+            item.stop();
+            return false;
+        });
+    }
+
     removeOffscreenEnemies() {
     this.enemies = this.enemies.filter(enemy => {
         let gone = enemy.x + enemy.width < -this.camera_x - 1000;
@@ -158,6 +183,7 @@ collectibleSpawnDistance = 400;
         this.removeOffscreenEnemies();
         this.updateEnemyAwareness();
         this.checkCollisions();
+        this.checkCollectibles();
         this.checkThrowObjects();
         this.updateBubbles();
         this.ctx.translate(this.camera_x, 0);
@@ -168,6 +194,7 @@ collectibleSpawnDistance = 400;
         this.addObjectsToCanvas(this.bubbles);
         this.ctx.translate(-this.camera_x, 0);
         this.addToCanvas(this.statusBar);
+        this.addToCanvas(this.potionBar);
 
             let self = this;
          requestAnimationFrame(function() {

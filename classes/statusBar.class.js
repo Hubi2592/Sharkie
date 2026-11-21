@@ -1,6 +1,6 @@
 
 class StatusBar extends DrawableObject{
-    STATUSIMAGES = [
+    HealthIMAGES = [
         'img/4. Marcadores/green/Life/100_  copia 2.png',
         'img/4. Marcadores/green/Life/80_  copia 3.png',
         'img/4. Marcadores/green/Life/60_  copia 3.png',
@@ -9,21 +9,31 @@ class StatusBar extends DrawableObject{
         'img/4. Marcadores/green/Life/0_  copia 3.png'
     ];
 
+    PotionIMAGES = [
+        'img/4. Marcadores/green/poisoned bubbles/100_ copia 3.png',
+        'img/4. Marcadores/green/poisoned bubbles/80_ copia 2.png',
+        'img/4. Marcadores/green/poisoned bubbles/60_ copia 2.png',
+        'img/4. Marcadores/green/poisoned bubbles/40_ copia 2.png',
+        'img/4. Marcadores/green/poisoned bubbles/20_ copia 3.png',
+        'img/4. Marcadores/green/poisoned bubbles/0_ copia 2.png'
+    ];
+
     percentage = 100;
 
-    constructor() {
+    constructor(type = 'health') {
         super();
-        this.loadImages(this.STATUSIMAGES);
+        this.images = type === 'potion' ? this.PotionIMAGES : this.HealthIMAGES;
+        this.loadImages(this.images);
         this.x = 10;
-        this.y = 10;
+        this.y = type === 'potion' ? 130 : 10;
         this.width = 400;
         this.height = 120;
-        this.setPercentage(100);
+        this.setPercentage(type === 'potion' ? 0 : 100);
     }
 
     setPercentage(percentage) {
         this.percentage = percentage;
-        let path = this.STATUSIMAGES[this.resolveImageIndex()];
+        let path = this.images[this.resolveImageIndex()];
         this.img = this.imgCache[path];
     }
 
