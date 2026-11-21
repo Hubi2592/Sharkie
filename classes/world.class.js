@@ -145,7 +145,7 @@ maxPotions = 5;
 
     updateEnemyAwareness() {
         this.enemies.forEach(enemy => {
-            if (enemy instanceof Jellyfish) {
+            if (enemy instanceof Jellyfish || enemy instanceof Enemy) {
                 enemy.nearby = enemy.distanceTo(this.character) < enemy.alertRange;
             }
         });
