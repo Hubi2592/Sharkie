@@ -1,6 +1,7 @@
 class World {
 statusBar = new StatusBar('health');
 potionBar = new StatusBar('potion');
+coinBar = new StatusBar('coin');
 character = new Character();
 enemies = level1.enemies;
 backgroundObjects = level1.backgroundObjects;
@@ -114,7 +115,7 @@ maxPotions = 5;
             }
             if (item instanceof Coin) {
                 this.coinsCollected++;
-                console.log('Münze eingesammelt, gesamt:', this.coinsCollected);
+                this.coinBar.setCount(this.coinsCollected);
             }
             item.stop();
             return false;
@@ -195,6 +196,8 @@ maxPotions = 5;
         this.ctx.translate(-this.camera_x, 0);
         this.addToCanvas(this.statusBar);
         this.addToCanvas(this.potionBar);
+        this.addToCanvas(this.coinBar);
+        this.coinBar.drawText(this.ctx);
 
             let self = this;
          requestAnimationFrame(function() {
