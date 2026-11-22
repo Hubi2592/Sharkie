@@ -5,7 +5,6 @@ const level1 = new Level(
     new Enemy(),
     new Enemy(),
     new Jellyfish(2000, 300),
-    new Endboss()
     ],
     [ 
     new BackgroundObject('img/3. Background/Layers/5. Water/D1.png',0),

@@ -12,7 +12,7 @@ camera_x =0;
 lastCharacterX = this.character.x;
 tileWidth =1900;
 nextTileIndex =2;
-maxTiles = 4;
+maxTiles = Infinity;
 nextEnemySpawnX =1900;
 enemySpawnDistance = 600;
 bubbles = [];
@@ -25,6 +25,9 @@ maxPotions = 5;
 slapDamage = 50;
 bubbleDamage = 25;
 slapReach = 120;
+endboss = null;
+bossSpawnCoins = 5;
+bossDamage = 20;
 
 
 
@@ -104,6 +107,14 @@ slapReach = 120;
         }
     }
 
+    spawnEndboss() {
+        if (this.endboss || this.coinsCollected < this.bossSpawnCoins) return;
+        let x = -this.camera_x + this.canvas.width - 450;   // sichtbar am rechten Bildrand
+        this.endboss = new Endboss(x);
+        this.endboss.target = this.character;
+        this.enemies.push(this.endboss);
+    }
+
     checkCollectibles() {
         if (this.character.isDead()) return;
 
@@ -138,6 +149,22 @@ slapReach = 120;
                 enemy.takeDamage(this.slapDamage, this.character, 8);
             }
         });
+    }
+
+    checkBossAttack() {
+        let boss = this.endboss;
+        if (!boss || !boss.attackHitReady) return;
+        boss.attackHitReady = false;
+        if (this.character.isDead()) return;
+
+        let b = boss.getHitbox();
+        let r = boss.hitReach;
+        let area = { x: b.x - r, y: b.y - r, width: b.width + 2 * r, height: b.height + 2 * r };
+        if (this.character.isCollidingWithArea(area) && this.character.hit()) {
+            this.character.health -= this.bossDamage;
+            this.statusBar.setPercentage(this.character.health);
+            this.character.knockback(boss);
+        }
     }
 
     removeOffscreenEnemies() {
@@ -190,6 +217,7 @@ slapReach = 120;
             let target = this.enemies.find(enemy => !enemy.isDead() && bubble.isColliding(enemy));
             if (target instanceof Enemy) target.takeDamage(this.bubbleDamage, this.character);
             if (target instanceof Jellyfish) target.takeDamage(this.bubbleDamage, bubble.direction);
+            if (target instanceof Endboss) target.takeDamage(this.bubbleDamage);
             let expired = Date.now() - bubble.spawnTime > bubble.lifeTime;
             let remove = target !== undefined || expired;
             if (remove) bubble.stop();
@@ -211,6 +239,8 @@ slapReach = 120;
         this.checkCollectibles();
         this.checkThrowObjects();
         this.checkSlapHit();
+        this.spawnEndboss();
+        this.checkBossAttack();
         this.updateBubbles();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);
