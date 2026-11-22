@@ -22,6 +22,9 @@ collectibleSpawnDistance = 400;
 coinsCollected = 0;
 potionsCollected = 0;
 maxPotions = 5;
+slapDamage = 50;
+bubbleDamage = 25;
+slapReach = 120;
 
 
 
@@ -122,17 +125,36 @@ maxPotions = 5;
         });
     }
 
+    checkSlapHit() {
+        if (!this.character.slapReady) return;
+        this.character.slapReady = false;
+
+        let box = this.character.getHitbox();
+        let x = this.character.otherDirection ? box.x - this.slapReach : box.x + box.width - 20;
+        let area = { x: x, y: box.y, width: this.slapReach + 20, height: box.height };
+
+        this.enemies.forEach(enemy => {
+            if (enemy instanceof Enemy && enemy.isCollidingWithArea(area)) {
+                enemy.takeDamage(this.slapDamage, this.character, 8);
+            }
+        });
+    }
+
     removeOffscreenEnemies() {
-    this.enemies = this.enemies.filter(enemy => {
-        let gone = enemy.x + enemy.width < -this.camera_x - 1000;
-        if (gone) enemy.stop();
-        return !gone;
-    });
+        this.enemies = this.enemies.filter(enemy => {
+            let deadGone =
+            (enemy instanceof Enemy && enemy.isDead() && enemy.y > this.canvas.height) ||
+            (enemy instanceof Jellyfish && enemy.isDead() && enemy.y + enemy.height < 0);
+        let gone = deadGone || enemy.x + enemy.width < -this.camera_x - 1000;
+            if (gone) enemy.stop();
+            return !gone;
+        });
     }
 
     checkCollisions() {
         if (this.character.isDead()) return;
         this.enemies.forEach(enemy => {
+            if (enemy.isDead()) return;
             if (this.character.isColliding(enemy) && this.character.hit()) {
                 this.character.health -= 20;
                 this.statusBar.setPercentage(this.character.health);
@@ -165,9 +187,11 @@ maxPotions = 5;
 
     updateBubbles() {
         this.bubbles = this.bubbles.filter(bubble => {
-            let hitEnemy = this.enemies.some(enemy => bubble.isColliding(enemy));
+            let target = this.enemies.find(enemy => !enemy.isDead() && bubble.isColliding(enemy));
+            if (target instanceof Enemy) target.takeDamage(this.bubbleDamage, this.character);
+            if (target instanceof Jellyfish) target.takeDamage(this.bubbleDamage, bubble.direction);
             let expired = Date.now() - bubble.spawnTime > bubble.lifeTime;
-            let remove = hitEnemy || expired;
+            let remove = target !== undefined || expired;
             if (remove) bubble.stop();
             return !remove;
         });
@@ -186,6 +210,7 @@ maxPotions = 5;
         this.checkCollisions();
         this.checkCollectibles();
         this.checkThrowObjects();
+        this.checkSlapHit();
         this.updateBubbles();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);

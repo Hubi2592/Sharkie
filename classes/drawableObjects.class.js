@@ -63,6 +63,14 @@ class DrawableObject {
             a.y + a.height > b.y;
     }
 
+    isCollidingWithArea(area) {
+        let b = this.getHitbox();
+        return area.x < b.x + b.width &&
+            area.x + area.width > b.x &&
+            area.y < b.y + b.height &&
+            area.y + area.height > b.y;
+    }
+
     distanceTo(mo) {
         let a = this.getHitbox();
         let b = mo.getHitbox();

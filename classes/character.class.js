@@ -112,6 +112,7 @@ class Character extends MovableObject {
     this.shotCooldown = 600;
     this.lastAttackTime = 0;
     this.attackCooldown = 800;
+    this.slapReady = false;
     this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120, shoot: 60 }; // Millisekunden pro Bild
     this.lastFrameTime = 0;
     this.x = 100;
@@ -174,9 +175,10 @@ class Character extends MovableObject {
                 if (state === 'longIdle') this.playAnimationTailLoop(this.longIdleImages, 3);
                 if (state === 'attack'){
                     this.playAnimationEndStop(this.attackImages);
+                    if (this.currentImage === 5) this.slapReady = true;    // NEU
                     if (this.currentImage >= this.attackImages.length) {
-                    this.attacking = false;
-                    this.lastAttackTime = Date.now();
+                        this.attacking = false;
+                        this.lastAttackTime = Date.now();
                     }
                 }
                 if (state === 'shoot') {

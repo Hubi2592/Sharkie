@@ -17,13 +17,13 @@ class MovableObject extends DrawableObject {
         }, 1000 / 60);
     }
 
-    knockback(source) {
+    knockback(source, strengthX = 25, strengthY = 10) {
         let a = this.getHitbox();
         let b = source.getHitbox();
         let dirX = (a.x + a.width / 2) < (b.x + b.width / 2) ? -1 : 1;
         let dirY = (a.y + a.height / 2) < (b.y + b.height / 2) ? -1 : 1;
-        this.knockbackX = dirX * 25;
-        this.knockbackY = dirY * 10;
+        this.knockbackX = dirX * strengthX;
+        this.knockbackY = dirY * strengthY;
     }
 
     applyKnockback() {
