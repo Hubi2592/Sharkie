@@ -6,11 +6,40 @@ let keyboard = new Keyboard();
 
 
 function init() {
+    level1 = createLevel1();
     canvas = document.getElementById("gameCanvas");
     world = new World(canvas, keyboard);
     ctx = canvas.getContext("2d");
     console.log("My character is:", world.character);
 
+}
+
+function startGame() {
+    document.getElementById('startScreen').classList.add('hidden');
+    init();
+}
+
+function toggleControls() {
+    document.getElementById('controls').classList.toggle('hidden');
+}
+
+function toggleFullScreen() {
+    let container = document.getElementById('gameContainer');
+    if (!document.fullscreenElement) {
+        container.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function showGameOver() {
+    document.getElementById('gameOverScreen').classList.remove('hidden');
+}
+
+function restartGame() {
+    document.getElementById('gameOverScreen').classList.add('hidden');
+    world.stop();
+    init();
 }
 
 window.addEventListener('keydown', (event) => {

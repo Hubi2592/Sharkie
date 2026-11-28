@@ -34,6 +34,8 @@ poisonIndicator = new PoisonIndicator();
 poisonDuration = 3500;   // Millisekunden
 poisonTickInterval = 1000;   // Millisekunden
 poisonDamage = 15;   // pro Tick
+gameOverTimer = null;
+running = true;
 
 
 
@@ -259,9 +261,23 @@ poisonDamage = 15;   // pro Tick
         });
     }
 
+    checkGameOver() {
+        if (!this.character.isDead() || this.gameOverTimer) return;
+        this.gameOverTimer = setTimeout(showGameOver, 2000);
+    }
+
+    stop() {
+        this.running = false;
+        clearTimeout(this.gameOverTimer);
+        this.character.stop();
+        this.enemies.forEach(enemy => enemy.stop());
+        this.bubbles.forEach(bubble => bubble.stop());
+        this.collectibles.forEach(item => item.stop());
+    }
+
     
     draw() {
-
+        if (!this.running) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.updateCamera();
         this.extendBackground();
@@ -275,6 +291,7 @@ poisonDamage = 15;   // pro Tick
         this.checkSlapHit();
         this.spawnEndboss();
         this.checkBossAttack();
+        this.checkGameOver();
         this.updateBubbles();
         this.applyPoisonDamage();
         this.ctx.translate(this.camera_x, 0);

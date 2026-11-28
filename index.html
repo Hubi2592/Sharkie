@@ -24,12 +24,44 @@
     <script src="./classes/endboss.class.js"></script>
     <script src="./levels/level1.js"></script>
     <script src="./js/game.js"></script>
-    
 </head>
-<body onload="init()">
+<body>
     <h1>Sharkie</h1>
 
-    <canvas id="gameCanvas" width="1900" height="900"></canvas>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1900" height="900"></canvas>
 
+        <div id="startScreen">
+            <h2>Bereit?</h2>
+
+            <div id="controls">
+                <div class="control">
+                    <img src="img/6.Botones/Key/arrow keys.png" alt="Pfeiltasten">
+                    <span>schwimmen</span>
+                </div>
+                <div class="control">
+                    <img src="img/6.Botones/Key/Space Bar key.png" alt="Leertaste">
+                    <span>Flossenschlag</span>
+                </div>
+                <div class="control">
+                    <img src="img/6.Botones/Key/D key.png" alt="Taste D">
+                    <span>Blase schießen</span>
+                </div>
+            </div>
+
+            <button id="startButton" onclick="startGame()">
+                <img src="img/6.Botones/Start/2.png" alt="Start">
+            </button>
+            <button id="fullScreen" onclick="toggleFullScreen()">
+                <img src="img/6.Botones/Full Screen/Mesa de trabajo 7.png" alt="Vollbild">
+            </button>
+        </div>
+        <div id="gameOverScreen" class="hidden">
+            <img src="img/6.Botones/Tittles/Game Over/Recurso 12.png" alt="Game Over">
+            <button id="restartButton" onclick="restartGame()">
+                <img src="img/6.Botones/Try again/Recurso 17.png" alt="Neustart">
+            </button>
+        </div>
+    </div>
 </body>
 </html>

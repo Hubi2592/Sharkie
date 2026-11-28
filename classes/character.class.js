@@ -20,7 +20,7 @@ class Character extends MovableObject {
         'img/1.Sharkie/1.IDLE/16.png',
         'img/1.Sharkie/1.IDLE/17.png',
         'img/1.Sharkie/1.IDLE/18.png'
-        ];
+    ];
 
     longIdleImages = [
         'img/1.Sharkie/2.Long_IDLE/i1.png',
@@ -35,7 +35,7 @@ class Character extends MovableObject {
         'img/1.Sharkie/2.Long_IDLE/i10.png',
         'img/1.Sharkie/2.Long_IDLE/i11.png',
         'img/1.Sharkie/2.Long_IDLE/i12.png',
-        'img/1.Sharkie/2.Long_IDLE/i14.png',
+        'img/1.Sharkie/2.Long_IDLE/i14.png'
     ];
 
     swimImages = [
@@ -74,7 +74,7 @@ class Character extends MovableObject {
         'img/1.Sharkie/5.Hurt/1.Poisoned/2.png',
         'img/1.Sharkie/5.Hurt/1.Poisoned/3.png',
         'img/1.Sharkie/5.Hurt/1.Poisoned/4.png'
-    ]
+    ];
 
     deathImages = [
         'img/1.Sharkie/6.dead/1.Poisoned/1.png',
@@ -93,38 +93,36 @@ class Character extends MovableObject {
 
     offset = { top: 90, bottom: 45, left: 40, right: 40 };
 
+    constructor() {
+        super().loadImage('img/1.Sharkie/1.IDLE/1.png');
+        this.loadImages(this.ImagesIdle);
+        this.loadImages(this.swimImages);
+        this.loadImages(this.longIdleImages);
+        this.loadImages(this.attackImages);
+        this.loadImages(this.hurtImages);
+        this.loadImages(this.deathImages);
+        this.loadImages(this.bubbleAttackImages);
+        this.lastInput = Date.now();
+        this.currentState = '';
+        this.attacking = false;
+        this.shooting = false;
+        this.shotReady = false;
+        this.lastShotTime = 0;
+        this.shotCooldown = 600;
+        this.lastAttackTime = 0;
+        this.attackCooldown = 800;
+        this.slapReady = false;
+        this.shootPoisoned = false;
+        this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt: 120, dead: 120, shoot: 60 }; // Millisekunden pro Bild
+        this.lastFrameTime = 0;
+        this.x = 100;
+        this.y = 300;
+        this.height = 200;
+        this.width = 200;
+        this.zindex = 1;
+        this.applyGravity();
 
-   constructor() {
-    super().loadImage('img/1.Sharkie/1.IDLE/1.png');
-    this.loadImages(this.ImagesIdle);
-    this.loadImages(this.swimImages);
-    this.loadImages(this.longIdleImages);
-    this.loadImages(this.attackImages);
-    this.loadImages(this.hurtImages);
-    this.loadImages(this.deathImages);
-    this.loadImages(this.bubbleAttackImages);
-    this.lastInput = Date.now();
-    this.currentState = '';
-    this.attacking = false;
-    this.shooting = false;
-    this.shotReady = false;
-    this.lastShotTime = 0;
-    this.shotCooldown = 600;
-    this.lastAttackTime = 0;
-    this.attackCooldown = 800;
-    this.slapReady = false;
-    this.shootPoisoned = false;
-    this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120, shoot: 60 }; // Millisekunden pro Bild
-    this.lastFrameTime = 0;
-    this.x = 100;
-    this.y = 300;
-    this.height = 200;
-    this.width = 200;
-    this.zindex = 1;
-    this.applyGravity();
-
-
-        setInterval(() => {
+        this.mainInterval = setInterval(() => {      // NEU: ID gespeichert
             this.applyKnockback();
             let k = this.world.keyboard;
             let moving = k.LEFT || k.RIGHT || k.UP || k.DOWN;
@@ -134,9 +132,9 @@ class Character extends MovableObject {
             }
 
             if (k.SPACE && !this.attacking && !this.shooting && !this.isDead() && Date.now() - this.lastAttackTime >= this.attackCooldown) {
-            this.attacking = true;
-            this.currentImage = 0;
-        }
+                this.attacking = true;
+                this.currentImage = 0;
+            }
 
             if (k.D && !this.shooting && !this.attacking && !this.isDead() && Date.now() - this.lastShotTime >= this.shotCooldown) {
                 this.shooting = true;
@@ -149,11 +147,11 @@ class Character extends MovableObject {
                 state = 'dead';
             } else if (this.isHurt()) {
                 state = 'hurt';
-                this.attacking = false;   // NEU (Fehler von oben)
-                this.shooting = false;    // NEU
+                this.attacking = false;
+                this.shooting = false;
             } else if (this.attacking) {
                 state = 'attack';
-            } else if (this.shooting) {   // NEU
+            } else if (this.shooting) {
                 state = 'shoot';
             } else if (moving) {
                 state = 'swim';
@@ -162,6 +160,7 @@ class Character extends MovableObject {
             } else {
                 state = 'idle';
             }
+
             if (state !== this.currentState) {
                 this.currentState = state;
                 this.currentImage = 0;
@@ -175,9 +174,9 @@ class Character extends MovableObject {
                 if (state === 'swim') this.playAnimation(this.swimImages);
                 if (state === 'idle') this.playAnimation(this.ImagesIdle);
                 if (state === 'longIdle') this.playAnimationTailLoop(this.longIdleImages, 3);
-                if (state === 'attack'){
+                if (state === 'attack') {
                     this.playAnimationEndStop(this.attackImages);
-                    if (this.currentImage === 5) this.slapReady = true;    // NEU
+                    if (this.currentImage === 5) this.slapReady = true;
                     if (this.currentImage >= this.attackImages.length) {
                         this.attacking = false;
                         this.lastAttackTime = Date.now();
@@ -193,5 +192,10 @@ class Character extends MovableObject {
                 }
             }
         }, 1000 / 60);
+    }
+
+    stop() {                                          // NEU
+        clearInterval(this.mainInterval);
+        clearInterval(this.gravityInterval);
     }
 }

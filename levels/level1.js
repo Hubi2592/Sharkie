@@ -1,11 +1,13 @@
-const level1 = new Level(
-    [
-    new Enemy(),
-    new Enemy(),
-    new Enemy(),
-    new Enemy(),
-    new Jellyfish(2000, 300),
-    ],
+let level1;
+
+function createLevel1() {
+    return new Level(
+        [
+            new Enemy(),
+            new Enemy(),
+            new Enemy(),
+            new Enemy(),
+        ],
     [ 
     new BackgroundObject('img/3. Background/Layers/5. Water/D1.png',0),
     new BackgroundObject('img/3. Background/Layers/3.Fondo 1/D1.png',0),
@@ -20,3 +22,4 @@ const level1 = new Level(
     new BackgroundObject('img/3. Background/Layers/1. Light/2.png', 1900)
     ],  
 );
+}

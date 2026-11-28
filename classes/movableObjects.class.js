@@ -13,7 +13,7 @@ class MovableObject extends DrawableObject {
     lastPoisonTick = 0;
 
     applyGravity() {
-        setInterval(() => {
+        this.gravityInterval = setInterval(() => {
             if (this.y < this.sinkLimit) {
                 this.y += this.sinkingSpeed;
             }
