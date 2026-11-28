@@ -5,7 +5,7 @@ class Bubble extends MovableObject {
 
     offset = { top: 0, bottom: 0, left: 0, right: 0 };
     speed = 10;
-    lifeTime = 3000; // Bubble will exist for 3 seconds
+    lifeTime = 3000;
 
     constructor(x, y, direction, isPoisoned = false) {
         super();
@@ -15,6 +15,7 @@ class Bubble extends MovableObject {
         this.width = 50;
         this.height = 50;
         this.direction = direction;
+        this.isPoisoned = isPoisoned;
         this.spawnTime = Date.now();
 
         this.moveInterval = setInterval(() => {
@@ -22,8 +23,7 @@ class Bubble extends MovableObject {
         }, 1000 / 60);
     }
 
-        stop(){
-            clearInterval(this.moveInterval);
-        }
-    
+    stop() {
+        clearInterval(this.moveInterval);
+    }
 }

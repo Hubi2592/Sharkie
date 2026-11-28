@@ -69,6 +69,7 @@ class Jellyfish extends MovableObject {    // NEU: war DrawableObject
         this.currentState = '';
         this.health = 50;       // 2 Blasen à 25 Schaden
         this.floatSpeed = 4;
+        this.poisonImmune = true;  // Jellyfish are immune to poison
 
         this.animationInterval = setInterval(() => {
             if (this.isDead()) {

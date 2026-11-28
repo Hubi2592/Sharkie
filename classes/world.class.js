@@ -28,6 +28,12 @@ slapReach = 120;
 endboss = null;
 bossSpawnCoins = 5;
 bossDamage = 20;
+poisonShotsUsed = 0;
+shotsPerPotion = 2;
+poisonIndicator = new PoisonIndicator();
+poisonDuration = 3500;   // Millisekunden
+poisonTickInterval = 1000;   // Millisekunden
+poisonDamage = 15;   // pro Tick
 
 
 
@@ -201,15 +207,42 @@ bossDamage = 20;
     }
 
     checkThrowObjects() {
-        if (this.character.shotReady) {
-            this.character.shotReady = false;
-            let c = this.character;
-            let direction = c.otherDirection ? -1 : 1;
-            let x = c.otherDirection ? c.x : c.x + c.width - 40;
-            let y = c.y + c.height / 2;
-            this.bubbles.push(new Bubble(x, y, direction));
-            // this.bubbles.push(new Bubble(x, y, direction, true));
+        if (!this.character.shotReady) return;
+        this.character.shotReady = false;
+
+        let c = this.character;
+        let poisoned = c.shootPoisoned;
+        let direction = c.otherDirection ? -1 : 1;
+        let x = c.otherDirection ? c.x : c.x + c.width - 40;
+        let y = c.y + c.height / 2;
+        this.bubbles.push(new Bubble(x, y, direction, poisoned));
+
+        if (poisoned) this.usePoisonShot();
+    }
+
+    usePoisonShot() {
+        this.poisonShotsUsed++;
+        if (this.poisonShotsUsed >= this.shotsPerPotion) {
+            this.poisonShotsUsed = 0;
+            this.potionsCollected--;
+            this.potionBar.setPercentage(this.potionsCollected / this.maxPotions * 100);
         }
+    }
+
+    drawPoisonIndicators() {
+        this.enemies.forEach(enemy => {
+            if (enemy.isDead() || !enemy.isPoisoned()) return;
+            this.poisonIndicator.showAbove(enemy);
+            this.addToCanvas(this.poisonIndicator);
+        });
+    }
+
+        applyPoisonDamage() {
+        this.enemies.forEach(enemy => {
+            if (enemy.isDead() || !enemy.poisonTickDue(this.poisonTickInterval)) return;
+            if (enemy instanceof Enemy) enemy.takeDamage(this.poisonDamage, this.character);
+            if (enemy instanceof Endboss) enemy.takeDamage(this.poisonDamage);
+        });
     }
 
     updateBubbles() {
@@ -218,6 +251,7 @@ bossDamage = 20;
             if (target instanceof Enemy) target.takeDamage(this.bubbleDamage, this.character);
             if (target instanceof Jellyfish) target.takeDamage(this.bubbleDamage, bubble.direction);
             if (target instanceof Endboss) target.takeDamage(this.bubbleDamage);
+            if (target && bubble.isPoisoned) target.applyPoison(this.poisonDuration);
             let expired = Date.now() - bubble.spawnTime > bubble.lifeTime;
             let remove = target !== undefined || expired;
             if (remove) bubble.stop();
@@ -242,10 +276,12 @@ bossDamage = 20;
         this.spawnEndboss();
         this.checkBossAttack();
         this.updateBubbles();
+        this.applyPoisonDamage();
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToCanvas(this.backgroundObjects);
         this.addObjectsToCanvas([this.character]);
         this.addObjectsToCanvas(this.enemies);
+        this.drawPoisonIndicators();
         this.addObjectsToCanvas(this.collectibles);
         this.addObjectsToCanvas(this.bubbles);
         this.ctx.translate(-this.camera_x, 0);

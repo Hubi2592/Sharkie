@@ -113,6 +113,7 @@ class Character extends MovableObject {
     this.lastAttackTime = 0;
     this.attackCooldown = 800;
     this.slapReady = false;
+    this.shootPoisoned = false;
     this.frameDurations = { swim: 80, idle: 150, longIdle: 200, attack: 30, hurt:120, dead:120, shoot: 60 }; // Millisekunden pro Bild
     this.lastFrameTime = 0;
     this.x = 100;
@@ -139,6 +140,7 @@ class Character extends MovableObject {
 
             if (k.D && !this.shooting && !this.attacking && !this.isDead() && Date.now() - this.lastShotTime >= this.shotCooldown) {
                 this.shooting = true;
+                this.shootPoisoned = this.world.potionsCollected > 0;
                 this.currentImage = 0;
             }
 

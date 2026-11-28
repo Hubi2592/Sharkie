@@ -81,10 +81,13 @@ class Endboss extends MovableObject {
         this.attackCooldownUntil = 0;
         this.attackHitReady = false;
         this.deathAnimationDone = false;
+        this.hurtRestart = false;
 
         this.animationInterval = setInterval(() => {
             let now = Date.now();
             let state = this.state;
+            if (this.hurtRestart && this.state === 'hurt') this.currentImage = 0;
+                this.hurtRestart = false;       
 
             if (this.isDead()) {
                 state = 'dead';
@@ -148,11 +151,18 @@ class Endboss extends MovableObject {
         if (Math.abs(dx) > 20) this.otherDirection = dx > 0;   // Bilder schauen nach links
     }
 
-    takeDamage(amount) {
+    takeDamage(amount, causeHurt = true) {
         if (this.isDead() || this.state === 'introduction') return;
         this.health -= amount;
-        this.lastHit = Date.now();   // löst über isHurt() den Zustand "hurt" aus
-        console.log(`Endboss takes ${amount} damage, health now ${this.health}`);
+        if (causeHurt) {
+            this.lastHit = Date.now();  // löst den Zustand "hurt" aus
+            this.hurtRestart = true;      // Animation wird neu gestartet, auch wenn sie noch läuft
+        }
+    }
+
+    applyPoison(duration) {
+        if (this.state === 'introduction') return;   // während der Introduction kein Gift
+        super.applyPoison(duration);
     }
 
     stop() {

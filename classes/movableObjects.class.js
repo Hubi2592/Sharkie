@@ -8,6 +8,9 @@ class MovableObject extends DrawableObject {
     health = 100;
     knockbackX = 0;
     knockbackY = 0;
+    poisonedUntil = 0;
+    poisonImmune = false;
+    lastPoisonTick = 0;
 
     applyGravity() {
         setInterval(() => {
@@ -73,4 +76,24 @@ class MovableObject extends DrawableObject {
     isDead() {
         return this.health <= 0;
     }
+
+
+    applyPoison(duration) {
+        if (this.poisonImmune) return;
+        if(!this.isPoisoned()) {
+            this.lastPoisonTick = Date.now();
+        }
+        this.poisonedUntil = Date.now() + duration;
+    }
+
+    poisonTickDue(interval) {
+        let now = Date.now();
+        if (!this.isPoisoned() || now - this.lastPoisonTick < interval) return false;
+        this.lastPoisonTick = now;
+        return true;
+    }
+    
+    isPoisoned() {
+        return Date.now() < this.poisonedUntil;
+    }   
 }
